@@ -1,0 +1,95 @@
+1. Sum of sales for 'Thailand' and 'Philippines' in June 2017, considering only orders with 'DELIVERED' status:
+
+SELECT 
+    country, 
+    status, 
+    SUM(total_selling_price) AS sum_total_selling_price
+FROM 
+    sales
+WHERE 
+    country IN ('Thailand', 'Philippines') 
+    AND status = 'DELIVERED' 
+    AND order_date BETWEEN '2017-06-01' AND '2017-06-30'
+GROUP BY 
+    country, 
+    status;
+
+
+2.Top 10 best-selling items based on the number of units sold (quantity) for partner_name XYZ:
+
+SELECT 
+    partner_name, 
+    item_id, 
+    SUM(item_quantity) AS sum_quantity
+FROM 
+    sales
+WHERE 
+    partner_name = 'XYZ'
+GROUP BY 
+    partner_name, 
+    item_id
+ORDER BY 
+    sum_quantity DESC
+LIMIT 10;
+
+3.Distinct count of customers who have 'REJECTED' orders that have '1001' as item_id in February and March 2017:
+
+SELECT 
+    item_id, 
+    sales_channel, 
+    COUNT(DISTINCT customer_id) AS distinct_count_of_customer
+FROM 
+    sales
+WHERE 
+    item_id = 1001 
+    AND status = 'REJECTED' 
+    AND order_date BETWEEN '2017-02-01' AND '2017-03-31'
+GROUP BY 
+    item_id, 
+    sales_channel;
+
+4.Sales Order (showing item) created this year with the latest status updated:
+
+SELECT 
+    partner_id, 
+    order_id, 
+    status AS latest_status, 
+    item_id, 
+    item_quantity, 
+    total_selling_price, 
+    order_date
+FROM 
+    sales
+WHERE 
+    YEAR(order_date) = YEAR(CURDATE())
+ORDER BY 
+    order_date DESC;
+
+5. Number of orders in each province and percentage comparing to the total number of orders:
+
+SELECT 
+    province, 
+    COUNT(order_id) AS number_of_order, 
+    (COUNT(order_id) * 100.0 / (SELECT COUNT(*) FROM sales)) AS percentage_of_total
+FROM 
+    sales
+GROUP BY 
+    province;
+
+6. Data Warehouse Design Suggestion
+
+If the data in the 'Date sample' sheet was designed as the company's Data Warehouse, I would suggest the following improvements:
+
+Normalization: Ensure that the data is properly normalized to avoid redundancy and improve data integrity.
+
+Indexing: Use indexes on frequently queried columns to enhance query performance.
+
+Partitioning: Partition large tables by date or other logical keys to improve query performance and manageability.
+
+Data Quality Checks: Implement automated data quality checks to ensure the accuracy and consistency of data.
+
+ETL Processes: Design robust ETL (Extract, Transform, Load) processes to regularly update the data warehouse with new data.
+
+Documentation: Maintain comprehensive documentation of the schema, ETL processes, and data sources.
+
+Security: Implement appropriate security measures to protect sensitive data, including access controls and encryption.
